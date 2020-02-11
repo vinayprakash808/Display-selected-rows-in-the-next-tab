@@ -1,0 +1,52 @@
+---
+title: "Untitled"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Page 1
+===================================== 
+
+### Chart A
+
+```{r}
+selectInput("dataset","Select",choices = c("","iris","mtcars"), selected = "iris")
+DT::DTOutput('table1')
+datasetInput <- reactive({
+    switch(input$dataset,
+           "iris" = iris,
+           "mtcars" = mtcars)
+  })
+output$table1 <- DT::renderDT({
+    head(datasetInput(), n = 10)
+  })
+```
+
+Page 2
+=====================================     
+
+### Reactive
+
+```{r}
+DT::DTOutput('table2')
+datasetInput <- reactive({
+    switch(input$dataset,
+           "iris" = iris,
+           "mtcars" = mtcars)
+  })
+output$table2 <- DT::renderDT({
+    if(is.null(input$table1_rows_selected)){
+      
+    } else {
+      head(datasetInput()[input$table1_rows_selected,], n = 100)
+    }
+    
+  })
+```
